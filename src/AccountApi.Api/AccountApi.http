@@ -1,0 +1,58 @@
+@host = http://localhost:5000
+
+### Reset all state
+POST {{host}}/reset
+
+### Balance of an unknown account -> 404, body 0
+GET {{host}}/balance?account_id=1234
+
+### Deposit into a new account -> 201
+POST {{host}}/event
+Content-Type: application/json
+
+{"type": "deposit", "destination": "100", "amount": 10}
+
+### Deposit into an existing account -> 201
+POST {{host}}/event
+Content-Type: application/json
+
+{"type": "deposit", "destination": "100", "amount": 10}
+
+### Balance of an existing account -> 200, body 20
+GET {{host}}/balance?account_id=100
+
+### Withdraw from an unknown account -> 404, body 0
+POST {{host}}/event
+Content-Type: application/json
+
+{"type": "withdraw", "origin": "200", "amount": 10}
+
+### Withdraw from an existing account -> 201
+POST {{host}}/event
+Content-Type: application/json
+
+{"type": "withdraw", "origin": "100", "amount": 5}
+
+### Transfer to a new account -> 201
+POST {{host}}/event
+Content-Type: application/json
+
+{"type": "transfer", "origin": "100", "amount": 15, "destination": "300"}
+
+### Transfer from an unknown account -> 404, body 0
+POST {{host}}/event
+Content-Type: application/json
+
+{"type": "transfer", "origin": "200", "amount": 15, "destination": "300"}
+
+### Withdraw more than the balance -> 422
+POST {{host}}/event
+Content-Type: application/json
+
+{"type": "withdraw", "origin": "300", "amount": 999}
+
+### Invalid amount -> 400
+POST {{host}}/event
+Content-Type: application/json
+
+{"type": "deposit", "destination": "100", "amount": -1}
