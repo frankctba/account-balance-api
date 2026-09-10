@@ -13,9 +13,19 @@ State lives in memory for the lifetime of the process.
 dotnet run --project src/AccountApi.Api
 ```
 
-The API listens on `http://localhost:5000`. The file
+The API listens on `http://localhost:8080`. The file
 [`src/AccountApi.Api/AccountApi.http`](src/AccountApi.Api/AccountApi.http) contains a ready-to-run
 request sequence for VS Code (REST Client extension) or JetBrains Rider.
+
+### Running in a container
+
+```bash
+docker build -t account-balance-api .
+docker run --rm -p 8080:8080 account-balance-api
+```
+
+The image is built for `linux/amd64` by default when using `docker buildx build --platform linux/amd64`;
+the build stage cross-compiles, so no emulation is needed on Apple Silicon.
 
 ## Testing
 
